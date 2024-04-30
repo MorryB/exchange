@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en" style="height: 100%">
+<head>
+    <meta charset="utf-8">
+    <title>ECharts</title>
+    <!-- 引入 echarts.js -->
+    <!--script src="\echartsmap\echarts-5.5.0-rc.2\dist\echarts.js"></script>
+    <script src="\echartsmap\echarts-5.5.0-rc.2\test\lib\jquery.min.js"></script-->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <style>
+        @font-face {
+            font-family: kaiti;
+            src: url("simkai.ttf");
+        }
+
+        body {
+            display: flex;
+            justify-content: center; /* 水平居中 */
+            align-items: center; /* 垂直居中 */
+            background-image: url('纯色背景.png');
+            background-size: 100% 100%;
+        }
+
+        .custom-tooltip {
+            background-image: url('纯色背景.png');
+            background-size: 100% 100%;
+            background-color: rgba(255, 255, 255, 0.5); /* 设置背景图片透明度为 50% */
+            text-align: center;
+            color: black
+            /* 其他样式属性 */
+        }
+
+
+    </style>
+</head>
+<body>
+<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+<!--div id="map" style="width:90vw;height:90vh;top: 7vh"></div-->
+<div id="chart" style="width:120vw; height:120vh;"></div>
+
+<script type="text/javascript">
+    // 初始化echarts实例
+    var myChart = echarts.init(document.getElementById('chart'));
+
+    // 地图数据
+    var geoData = [
+        { name: '四川省', coord: [104.067714,30.585503] },
+        { name: '江苏省', coord: [118.797149,32.069225] },
+        { name: '上海市', coord: [121.47824,31.233459] },
+        { name: '湖南省', coord: [112.937862,28.233919] },
+        { name: '北京市', coord: [116.410512,39.907382] },
+        { name: '浙江省', coord: [120.21013,30.249588] },
+        { name: '香港特别行政区', coord: [114.16082,22.274903] },
+        { name: '云南省', coord: [102.726194,25.058371] },
+        { name: '安徽省', coord: [117.259824,31.821717] },
+        { name: '江西省', coord: [115.875177,28.689802] },
+        { name: '西藏自治区', coord: [91.159989,29.667959] },
+        { name: '贵州省', coord: [106.639734,26.653635] },
+        { name: '重庆市', coord: [106.558437,29.572012] },
+        { name: '广东省', coord: [113.267827,23.137949] },
+        { name: '甘肃省', coord: [103.8319,36.065933] },
+        { name: '青海省', coord: [101.789907,36.623451] },
+        //{ name: '甘肃省', coord: [103.8319,36.065933] },
+        { name: '山西省', coord: [112.578,37.877552] },
+        { name: '湖北省', coord: [114.30245,30.599358] }
+    ];
+    // 连线数据
+    var lineData = [
+        { from:'上海市',to:'江苏省' },
+        { from:'湖南省',to:'北京市' },
+        { from:'上海市',to:'浙江省' },
+        { from:'四川省',to:'重庆市' },
+        { from:'四川省',to:'云南省' },
+        { from:'四川省',to:'香港特别行政区' },
+        { from:'安徽省',to:'北京市' },
+        { from:'安徽省',to:'四川省' },
+        { from:'江西省',to:'北京市' },
+        { from:'江西省',to:'青海省' },
+        { from:'江西省',to:'湖南省' },
+        { from:'江西省',to:'广东省' },
+        { from:'江西省',to:'山西省' },
+        { from:'江西省',to:'甘肃省' },
+        { from:'江西省',to:'湖北省' },
+        { from:'西藏自治区',to:'北京市' },
+        { from:'贵州省',to:'江苏省' },
+        { from:'重庆市',to:'四川省' }
+    ];
+    // 绘制地图
+    $.get('中华人民共和国.json', function (geoJson) {
+        myChart.hideLoading();
+        echarts.registerMap('china', geoJson);
+        myChart.setOption({
+            geo: {
+                map: 'china',
+                roam: true,
+                label: {
+                    emphasis: {
+                        show: false
+                    }
+                },
+                itemStyle: {
+                    normal: {
+                        areaColor: '#f0f0f0',
+                        borderColor: '#b3b2ae'
+                    },
+                    emphasis: {
+                        areaColor:'#f0f0f0'
+                    }
+                }
+            },
+            series: [{
+                type: 'lines',
+                zlevel: 2,
+                symbolSize: 10,
+                effect: {
+                    show: false,
+                    period: 4,
+                    trailLength: 0.5,
+                    symbolSize: 5
+                },
+                lineStyle: {
+                    //color: '#5f788e',
+                    color: {
+                        type: 'linear',  // 设置为线性渐变
+                        x: 0,
+                        y: 0,
+                        x2: 0,
+                        y2: 1,
+                        colorStops: [{
+                            offset: 0, color: 'rgba(177,36,0,0.49)' // 渐变起始色
+                        }, {
+                            offset: 1, color: 'rgba(108,152,221,0.8)'// 渐变结束色
+                        }],
+                        globalCoord: false // 缺省为 false
+                    },
+                    width: 2,
+                    opacity: 0.6,
+                    curveness: 0.2,
+
+                },
+                data: lineData.map(function (dataItem) {
+                    /*
+                    var fromCoord = geoData.find(function (geoItem) {
+                        return geoItem.name === dataItem.from;
+                    }).coord;
+                    var toCoord = geoData.find(function (geoItem) {
+                        return geoItem.name === dataItem.to;
+                    }).coord;
+                    return { fromCoord, toCoord };*/
+                    return {
+                        fromName: dataItem.from,
+                        toName: dataItem.to,
+                        coords: [
+                            geoData.find(function (geoItem) {
+                                return geoItem.name === dataItem.from;
+                            }).coord,
+                            geoData.find(function (geoItem) {
+                                return geoItem.name === dataItem.to;
+                            }).coord
+                        ]
+                    };
+                })
+            }, {
+                type: 'effectScatter',
+                coordinateSystem: 'geo',
+                zlevel: 2,
+                rippleEffect: {
+                    brushType: 'stroke'
+                    //brushType: 'fill'
+                },
+                label: {
+                    emphasis: {
+                        show: true,
+                        position: 'right',
+                        formatter: '{b}'
+                    }
+                },
+                symbolSize: 10,
+                itemStyle: {
+                    normal: {
+                        color: '#2a333d'
+                    }
+                },
+                /*
+                data: geoData.map(function (geoItem) {
+                    return {
+                        name: geoItem.name,
+                        value: geoItem.coord.concat(10)
+                    };
+                })
+                */
+                data: geoData.map(function (geoItem) {
+                    if (geoItem.name === '江苏省' || geoItem.name === '浙江省' || geoItem.name === '湖北省'
+                        || geoItem.name === '西藏自治区' || geoItem.name === '湖南省' || geoItem.name === '四川省'
+                        || geoItem.name === '贵州省' || geoItem.name === '重庆市' || geoItem.name === '上海市' ||
+                        geoItem.name === '江西省' || geoItem.name === '安徽省' || geoItem.name === '青海省') {
+                        return {
+                            name: geoItem.name,
+                            value: geoItem.coord.concat(10),
+                            itemStyle: {
+                                color: 'rgba(177,36,0,0.49)'
+                            }
+                        };
+                    } else {
+                        return {
+                            name: geoItem.name,
+                            value: geoItem.coord.concat(10),
+                            itemStyle: {
+                                color: 'rgba(108,152,221,0.8)'
+                            }
+                        };
+                    }
+                })
+
+            }]
+        })
+    });
+
+
+
+</script>
+
+</body>
+</html>
