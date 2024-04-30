@@ -30,11 +30,23 @@
             color: black
             /* 其他样式属性 */
         }
-
+        .title{
+            position: absolute;
+            top: 7%; /* 相对于父元素顶部位置为 50% */
+            left: 50%; /* 相对于父元素左侧位置为 50% */
+            transform: translate(-50%, -50%);
+            margin: 0; /* 清除默认 margin */
+            z-index: 999;
+            font-family: "kaiti";
+            font-size: 22px;
+        }
 
     </style>
 </head>
 <body>
+<div class="title">
+    <h2>长江流域博物馆合作交流图</h2>
+</div>
 <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
 <!--div id="map" style="width:90vw;height:90vh;top: 7vh"></div-->
 <div id="chart" style="width:120vw; height:120vh;"></div>
